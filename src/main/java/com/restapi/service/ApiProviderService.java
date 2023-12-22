@@ -9,13 +9,43 @@ import org.springframework.stereotype.Service;
 import com.restapi.mapper.ApiMapper;
 import com.restapi.model.ApiVO;
 
+import go.kr.dsp.api.ChecksumModule;
+import go.kr.dsp.api.CryptoModule;
+
 @Service
 public class ApiProviderService {
 	@Autowired
 	private ApiMapper apiMapper;
 
-	public ApiVO test() {
-		return apiMapper.test();
+	public String checksum(String message) {
+		System.out.println("message " + message);
+		ChecksumModule checksumModule = new ChecksumModule();
+		String checksumResult = checksumModule.checksum(message);
+		System.out.println("checksumResult " + checksumResult);
+
+		return checksumResult;
+	}
+
+	public String encrypt(String data) {
+		String strKey = "b7Rz1cawP9ws1RJQARK5wbiqHOQnTLxErPQVQMKeBnY=";
+		// String data = "Temporary Message for Encrypt";
+
+		CryptoModule cryptoModule = new CryptoModule();
+		String encryptResult = cryptoModule.encrypt(strKey, data);
+		System.out.println("encryptResult " + encryptResult);
+
+		return encryptResult;
+	}
+
+	public String decrypt(String encryptResult) {
+		String strKey = "b7Rz1cawP9ws1RJQARK5wbiqHOQnTLxErPQVQMKeBnY=";
+
+		CryptoModule cryptoModule = new CryptoModule();
+
+		String decryptResult = cryptoModule.decrypt(strKey, encryptResult);
+		System.out.println("decryptResult " + decryptResult);
+
+		return decryptResult;
 	}
 
 	// 랜덤문자생성

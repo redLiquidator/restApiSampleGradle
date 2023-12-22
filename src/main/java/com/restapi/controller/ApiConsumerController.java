@@ -1,6 +1,5 @@
 package com.restapi.controller;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,9 +27,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.restapi.model.ApiVO;
 import com.restapi.service.ApiProviderService;
 
-import go.kr.dsp.api.ChecksumModule;
-import go.kr.dsp.api.CryptoModule;
-
 
 
 @RestController
@@ -42,41 +38,25 @@ public class ApiConsumerController {
 	
 	private static HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "KakaoAK " + "695c206ec549d13455fd2e0b582ea69a");
-		//headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_FORM_URLENCODED));
+		//headers.add("Authorization", "KakaoAK " + "695c206ec549d13455fd2e0b582ea69a");
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		
+		//headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
 
 		return headers;
 	}
-
-	@GetMapping(value = "/encryptdecrypt")
-	public void encryptdecrypt(){
-		System.out.println("encryptdecrypt***");
-			
-		String message = "Temporary Message for Checksum";
-		System.out.println("message "+message);
-		ChecksumModule checksumModule = new ChecksumModule();
-		String checksumResult = checksumModule.checksum(message);
-		System.out.println("checksumResult "+checksumResult);
-
-		// Encrypt, Decrypt
-		String strKey = "b7Rz1cawP9ws1RJQARK5wbiqHOQnTLxErPQVQMKeBnY=";
-		String data = "Temporary Message for Encrypt";
 	
-		CryptoModule cryptoModule = new CryptoModule();
-		String encryptResult = cryptoModule.encrypt(strKey,data);
-		System.out.println("encryptResult "+encryptResult);
-		String decryptResult = cryptoModule.decrypt(strKey, encryptResult);
-		System.out.println("decryptResult "+decryptResult);
-	}
-	
-	// 회원 정보및 예약정보 조회
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	// 회원 정보및 예약정보 조회 요청
+	@SuppressWarnings("rawtypes")
 	@GetMapping(value = "/consumerSearch")
-	public ResponseEntity<?> cgetUserinfoById(@RequestParam String id){
+	public HashMap<String, Object> cgetUserinfoById(@RequestParam String id){
 		System.out.println("consumer | cgetUserinfoById | request: get | id " + id);
+	
+		apiService.checksum(id);
+		apiService.encrypt(id);
 		
-		
+		//ClientHttpRequestFactory requestFactory = new     
+		//	      HttpComponentsClientHttpRequestFactory(HttpClients.createDefault());
 		
 		RestTemplate template = new RestTemplate();
 
@@ -85,19 +65,17 @@ public class ApiConsumerController {
 		body.add("bodykey", "bodyvalue");
             
         HttpEntity<Object> request = new HttpEntity<Object>(body, getHeaders());
-        ResponseEntity<Map> response = template.exchange("http://localhost:8081/responderSearch", HttpMethod.POST, request, Map.class);
+        ResponseEntity<Map> response;
         
-        //Map readyResp = response.getBody();
+         response = template.exchange("http://localhost:8081/responderSearch", HttpMethod.POST, request, Map.class);
+     
         System.out.println("readyResp | " + response);
-        
-        //오류방지
-        user = apiService.getUserinfoById(id);
-		System.out.println("user " + user);
-		if (user == null) {
-			user = apiService.getOnlyUserinfoById(id);
-		}
-
-		return new ResponseEntity(user, HttpStatus.OK);
+              
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("status", response.getStatusCode());
+        result.put("header", response.getHeaders());
+        result.put("body", response.getBody());
+        return result;
 	}
 
 	// 예약하기
@@ -111,25 +89,6 @@ public class ApiConsumerController {
 
 		user = apiService.getUserinfoById(messageBody.getId());
 
-		// 1.set header
-		/*HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.set("헤더이름", "값");
-
-		// 2. set body
-		MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-		body.add("키", "값");
-
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = mapper.writeValueAsString(user);
-
-		body.add("user", jsonString);
-
-		HashMap<String, Object> result = new HashMap<>();
-
-		result.put("header", headers);
-		result.put("body", body);*/
-
 		return new ResponseEntity(user, HttpStatus.OK);
 	}
 
@@ -142,26 +101,6 @@ public class ApiConsumerController {
 		System.out.println("messageBody |" + messageBody);
 		System.out.println("getuserid |" + messageBody.getId());
 		apiService.modify(messageBody);
-		/*ApiVO resinfo = apiService.getReservationInfo(messageBody.getInsp_rsvt_no());
-
-		// 1.set header
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.set("헤더이름", "값");
-
-		// 2. set body
-		MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-		body.add("키", "값");
-
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = mapper.writeValueAsString(resinfo);
-
-		body.add("user", jsonString);
-
-		HashMap<String, Object> result = new HashMap<>();
-
-		result.put("header", headers);
-		result.put("body", body);*/
 
 		return new ResponseEntity(user, HttpStatus.OK);
 	}
@@ -173,28 +112,8 @@ public class ApiConsumerController {
 		System.out.println("delete | request: post");
 		System.out.println("messageBody |" + messageBody);
 		apiService.delete(messageBody);
-		/*user = apiService.getUserinfoById(messageBody.getId());
-
-		// 1.set header
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
-		headers.set("헤더이름", "값");
-
-		// 2. set body
-		MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-		body.add("키", "값");
-
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = mapper.writeValueAsString(user);
-
-		body.add("user", jsonString);
-
-		HashMap<String, Object> result = new HashMap<>();
-
-		result.put("header", headers);
-		result.put("body", body);*/
 
 		return new ResponseEntity(user, HttpStatus.OK);
 	}
-
+	
 }

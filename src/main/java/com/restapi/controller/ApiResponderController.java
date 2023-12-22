@@ -6,9 +6,12 @@ import javax.annotation.Resource;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.restapi.model.ApiVO;
@@ -22,18 +25,20 @@ public class ApiResponderController {
 	@Resource
 	private ApiProviderService apiService;
 	ApiVO user;
-
+	
 	// 회원 정보및 예약정보 조회
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@PostMapping(value = "/responderSearch")
-	public ResponseEntity<?> rgetUserinfoById(@RequestHeader Map<String, String> header,@RequestBody ApiVO messageBody) {
-		String id="5c5e53fd";
-		System.out.println("rgetUserinfoById | request: get | id " + id);
+	@PostMapping(value = "/responderSearch", consumes = {"application/x-www-form-urlencoded"})
+	public ResponseEntity<?> rgetUserinfoById(@RequestHeader Map<String, String> header, MultiValueMap<String, String> map) {
+		System.out.println("responder | rgetUserinfoById | request: get | result " +map);
 		
-		user = apiService.getUserinfoById(id);
-		System.out.println("user " + user);
+		String decryptedid = apiService.decrypt("sldkslkfj");
+		
+		user = apiService.getUserinfoById(decryptedid);
+		
+		System.out.println("user | " + user);
 		if (user == null) {
-			user = apiService.getOnlyUserinfoById(id);
+			user = apiService.getOnlyUserinfoById(decryptedid);
 		}
 
 		return new ResponseEntity(user, HttpStatus.OK);
