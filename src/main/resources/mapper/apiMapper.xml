@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Sql Mapper -->
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.restapi.mapper.ApiMapper">
+
+	<select id="test3" resultType="com.restapi.model.ApiVO">
+ 		SELECT mbl_no FROM members where id= 'a2c9393b'
+ 	</select> 
+ 	<select id="test1" resultType="String">
+ 		SELECT mbl_no FROM members where id= 'a2c9393b'
+ 	</select>	
+ 	<select id="test2" resultType="String">
+ 		SELECT 7788 empno FROM dual
+ 	</select> 
+ 	<select id="test" resultType="com.restapi.model.ApiVO">
+ 		SELECT insp_rsvt_no FROM reservation where insp_rsvt_no= '100001'
+ 	</select> 
+ 	
+	
+	<select id="getUserinfoById" parameterType="com.restapi.model.ApiVO" resultType="com.restapi.model.ApiVO">
+ 		SELECT 
+ 			members.id,
+ 			members.nm,
+ 			members.brdt,
+ 			members.mbl_no,
+ 			reservation.insp_rsvt_no,
+ 			reservation.insp_addr,
+ 			reservation.insp_dt
+ 		FROM reservation
+		INNER JOIN members
+		ON reservation.insp_rsvt_no = members.insp_rsvt_no
+		WHERE members.id = #{id}
+ 	</select> 	
+ 	
+ 	<select id="getOnlyUserinfoById" parameterType="com.restapi.model.ApiVO" resultType="com.restapi.model.ApiVO">
+ 		SELECT 
+ 			id,
+ 			nm,
+ 			brdt,
+ 			mbl_no
+ 		FROM members
+		WHERE members.id = #{id}
+ 	</select> 
+ 	
+ 	<select id="getReservationInfo" parameterType="com.restapi.model.ApiVO" resultType="com.restapi.model.ApiVO">
+ 		SELECT 
+ 			insp_rsvt_no,
+ 			insp_addr,
+ 			insp_dt
+ 		FROM reservation
+		WHERE insp_rsvt_no = #{insp_rsvt_no}
+ 	</select> 
+	
+ 	<update id="updateExamNo" parameterType="com.restapi.model.ApiVO">
+ 		UPDATE members 
+ 		SET insp_rsvt_no= #{insp_rsvt_no}
+ 		WHERE id= #{id}
+ 	</update>
+ 	
+ 	<insert id="insertReservation" parameterType="com.restapi.model.ApiVO">
+ 		INSERT INTO reservation
+ 		VALUES (#{insp_rsvt_no}, #{insp_addr}, #{insp_dt})
+ 	</insert>
+ 	
+ 	<update id="updateReservation" parameterType="com.restapi.model.ApiVO">
+ 		UPDATE reservation 
+ 		SET insp_addr= #{insp_addr}, insp_dt= #{insp_dt}
+ 		WHERE insp_rsvt_no= #{insp_rsvt_no}
+ 	</update>
+ 	
+ 	<delete id="deleteReservation" parameterType="com.restapi.model.ApiVO">
+ 		DELETE FROM reservation
+ 		WHERE insp_rsvt_no= #{insp_rsvt_no}
+ 	</delete>
+ 	
+</mapper> 	

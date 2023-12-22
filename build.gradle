@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.7'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'war'
+}
+
+version = '1.0.0'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'org.apache.camel.springboot:camel-spring-boot-dependencies:3.20.0'
+    }
+}
+
+dependencies {
+	 implementation 'org.springframework.boot:spring-boot-starter-web'
+//    implementation('org.springframework.boot:spring-boot-starter-web') {
+//       exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
+//    }
+    implementation 'org.apache.camel.springboot:camel-spring-boot-starter'
+    implementation 'org.apache.camel:camel-endpointdsl'
+    implementation 'org.apache.camel:camel-yaml-dsl'
+    implementation 'org.apache.camel.springboot:camel-kafka-starter'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.apache.camel.springboot:camel-jackson-starter'
+    implementation 'org.apache.camel.springboot:camel-jetty-starter'
+    implementation 'org.apache.camel.springboot:camel-servlet-starter'
+    implementation 'org.apache.camel.springboot:camel-rest-starter'
+    implementation 'org.apache.camel.springboot:camel-opentelemetry-starter'
+    implementation 'org.apache.camel.springboot:camel-opentracing-starter'
+    implementation 'io.opentracing.contrib:opentracing-spring-jaeger-starter:3.3.1'
+    implementation 'org.apache.camel.springboot:camel-http-starter'
+    implementation 'org.apache.camel.springboot:camel-resilience4j-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'org.apache.camel.springboot:camel-vertx-kafka-starter'
+    implementation 'com.jcraft:jsch:0.1.55'
+    compileOnly 'org.projectlombok:lombok'
+    //runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.25' 
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
+    runtimeOnly 'javax.servlet:javax.servlet-api'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+	implementation 'javax.servlet:jstl'
+	implementation files("libs/EncryptModule-11.jar")
+}
+
+apply plugin: "eclipse"
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
